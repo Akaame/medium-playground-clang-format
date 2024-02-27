@@ -3,6 +3,9 @@ name: "Clang Format"
 on:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   format:
     name: Clang Format
@@ -22,3 +25,13 @@ jobs:
       - name: Format changed CPP files
         if: ${{ steps.cpp-changes.outputs.cpp == 'true' }}
         run: clang-format -i ${{ steps.cpp-changes.outputs.cpp_files }}
+
+      - name: Commit changes
+        if: ${{ steps.cpp-changes.outputs.cpp == 'true' }}
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Actions"
+          git commit -am "Format code"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
