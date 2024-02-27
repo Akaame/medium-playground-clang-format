@@ -1,0 +1,24 @@
+name: "Clang Format"
+
+on:
+  pull_request:
+
+jobs:
+  format:
+    name: Clang Format
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Filter changed CPP files
+        id: cpp-changes
+        uses: egym/paths-filter@v2
+        with:
+          list-files: 'shell'
+          filters: |
+            cpp:
+              - '**/*.cpp'
+              - '**/*.h'
+      - name: Format changed CPP files
+        if: ${{ steps.cpp-changes.outputs.cpp == 'true' }}
+        run: clang-format -i ${{ steps.cpp-changes.outputs.cpp_files }}
