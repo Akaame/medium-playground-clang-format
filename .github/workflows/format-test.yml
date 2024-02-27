@@ -22,3 +22,11 @@ jobs:
       - name: Format changed CPP files
         if: ${{ steps.cpp-changes.outputs.cpp == 'true' }}
         run: clang-format -i ${{ steps.cpp-changes.outputs.cpp_files }}
+      
+      - name: Fail if any files were formatted
+        if: ${{ steps.cpp-changes.outputs.cpp == 'true' }}
+        run: |
+          if [[ -n $(git diff --exit-code) ]]; then
+            echo "Some files were formatted. Please run clang-format and commit the changes."
+            exit 1
+          fi
